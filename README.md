@@ -57,7 +57,12 @@ function draw(canvasNumber, index, value)
 ```
    
 ## Conclusion
-As a result we've got 10 images explaining impact of each pixel to the recognized class.
+As a result we've got 10 images explaining impact of each pixel to the recognized class. Interesting that some of them
+are looking quite similar to digits themselves and easily recognizable:
+
+![0](http://cleardatalabs.com/knowledge-extract-ffnn-mnist/char0.png)
+
+![3](http://cleardatalabs.com/knowledge-extract-ffnn-mnist/char3.png)
 
 Online page with all digits and canvases painted at runtime: http://cleardatalabs.com/knowledge-extract-ffnn-mnist/ 
 
