@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body, * {font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif; background-color: white;}
+        table {font-size: 124px; border: none; text-align: center;}
+        table td {width: 280px; height: 280px;}
+        a {text-decoration: none; font-weight: bold; color: #777}
+        a:hover {text-decoration: underline}
+        .logo {background: url("logo.png") no-repeat left; margin-left: 20px; padding-left: 60px}
+        .header {font-size: 48px; border-bottom: 1px solid black}
+        .main {margin: 10px auto; width: 480px}
+        .main, .footer {text-align: center}
+        .footer {height: 30px; border-top: 1px solid black; padding-top: 5px}
+    </style>
+    <script src="./net.js"></script>
+    <script>
+        var resolution = 28;
+        var numPixels = resolution*resolution;
+        var scale = 10;
+
+        function draw(canvasNumber, index, value) {
+            var color = Math.floor(255*(1-value));
+            var y = scale * (index % resolution);
+            var x = scale * Math.floor(index / resolution);
+
+            var c=document.getElementById("canvas" + canvasNumber);
+            var ctx=c.getContext("2d");
+
+            ctx.beginPath();
+            ctx.fillStyle = "rgb(" + color +"," + color + "," + color + ")";
+            ctx.lineWidth="1";
+            ctx.rect(x, y, scale, scale);
+            ctx.fill();
+        }
+
+        function getInfluence(inputIndex, outIndex) {
+            var sum = 0;
+            for (var i=0; i<w12.length; i++) {
+                sum += w12[i][inputIndex]*w23[outIndex][i];
+            }
+            return sum;
+        }
+    </script>
+</head>
+
+<body>
+    <div class="header">
+        <a class="logo" href="http://cleardatalabs.com">ClearDataLabs</a>
+    </div>
+    <div class="main">
+        <h1>Knowledge extract from FFNN trained on MNIST</h1>
+        <table>
+            <tr>
+                <td>0</td>
+                <td><canvas id="canvas0" width="280px" height="280px"></canvas></td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td><canvas id="canvas1" width="280px" height="280px"></canvas></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><canvas id="canvas2" width="280px" height="280px"></canvas></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><canvas id="canvas3" width="280px" height="280px"></canvas></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><canvas id="canvas4" width="280px" height="280px"></canvas></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><canvas id="canvas5" width="280px" height="280px"></canvas></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td><canvas id="canvas6" width="280px" height="280px"></canvas></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td><canvas id="canvas7" width="280px" height="280px"></canvas></td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td><canvas id="canvas8" width="280px" height="280px"></canvas></td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td><canvas id="canvas9" width="280px" height="280px"></canvas></td>
+            </tr>
+
+        </table>
+    </div>
+    <div class="footer">
+        created by <a href="http://cleardatalabs.com">ClearDataLabs</a> in 2018
+        based on <a href="http://myselph.de/neuralNet.html">myselph.de neuralNet</a>
+        distributed under <a href="https://choosealicense.com/licenses/mit/">MIT</a>
+        hosted on <a href="https://github.com/cleardatalabs/knowledge-extract-ffnn-mnist">GitHub</a>
+    </div>
+<script>
+    (function() {
+
+        for (j=0; j<10; j++) { // digits, from 0 till 9
+            var influences = Array();
+            for (var i = 0; i < numPixels; i++) {
+                influences[i] = getInfluence(i, j);
+            }
+
+            var max = Math.max(...influences);
+            var min = Math.min(...influences);
+
+            for (var i = 0; i < numPixels; i++) {
+                draw(j, i, (influences[i] - min) / (max - min));
+            }
+        }
+
+    })();
+</script>
+</body>
+</html>
