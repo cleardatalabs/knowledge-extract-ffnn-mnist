@@ -58,5 +58,6 @@ function draw(canvasNumber, index, value)
    
 ## Conclusion
 As a result we've got 10 images explaining impact of each pixel to the recognized class.
-Online page with all digits and canvases painted at runtime: 
+
+Online page with all digits and canvases painted at runtime: http://cleardatalabs.com/knowledge-extract-ffnn-mnist/ 
 
