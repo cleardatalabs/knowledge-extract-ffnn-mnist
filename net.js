@@ -257,5 +257,5 @@ function nn(data, w12, bias2, w23, bias3) {
 
     // timing measurement
     var dt = new Date() - t1; console.log('NN time: '+dt+'ms');
-    return out3;
+    return output;
 }
