@@ -64,7 +64,8 @@ As a result we've got 10 images explaining impact of each input pixel to the rec
 
 ![3](http://cleardatalabs.com/knowledge-extract-ffnn-mnist/char3.png)
 
-Online demo page with all the digits and canvases painted at runtime: http://cleardatalabs.com/knowledge-extract-ffnn-mnist/ 
+Online demo page with all the digits and canvases painted at runtime available at: 
+http://cleardatalabs.com/knowledge-extract-ffnn-mnist/ 
 
 ## Next steps
 The influence (casual index) method used is pretty easy and fast one. For feed forward networks with known and simple structure it works pretty well. However more complex structures (or even "black box" models) might require different approaches i.e. adjusting the image to fixed network structure and output class like it was done in [Deep Dream](https://en.wikipedia.org/wiki/DeepDream). 
