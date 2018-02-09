@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-113775788-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-113775788-1');
+</script>
+
     <meta charset="UTF-8">
     <title>Knowledge extract from FFNN trained on MNIST</title>
     <style>
@@ -13,6 +23,7 @@
         .header {font-size: 48px; border-bottom: 1px solid black}
         .main {margin: 10px auto; width: 480px}
         .main, .footer {text-align: center}
+        .main p {text-align: justify}
         .footer {height: 30px; border-top: 1px solid black; padding-top: 5px}
     </style>
     <script src="./net.js"></script>
@@ -70,7 +81,7 @@
 <body>
     <div class="header">
         <a class="logo" href="http://cleardatalabs.com">ClearDataLabs</a>
-    </div>
+    </div>    
     <div class="main">
         <h1>Knowledge extract from FFNN trained on MNIST</h1>
         <p>Below images are generated "on the fly" by reverse analysis of pre-trained feed forward neural network used in handwritten digits recognition</p>
