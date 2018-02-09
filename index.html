@@ -17,32 +17,53 @@
     </style>
     <script src="./net.js"></script>
     <script>
-        var resolution = 28;
-        var numPixels = resolution*resolution;
-        var scale = 10;
 
-        function draw(canvasNumber, index, value) {
-            var color = Math.floor(255*(1-value));
-            var y = scale * (index % resolution);
-            var x = scale * Math.floor(index / resolution);
+        function Model (canvas) {
+            this.canvas = canvas;
+            this.scale = 10;
+            this.resolution = 28;
+            this.numPixels = this.resolution * this.resolution;
 
-            var c=document.getElementById("canvas" + canvasNumber);
-            var ctx=c.getContext("2d");
+            this.inputs = [];
 
-            ctx.beginPath();
-            ctx.fillStyle = "rgb(" + color +"," + color + "," + color + ")";
-            ctx.lineWidth="1";
-            ctx.rect(x, y, scale, scale);
-            ctx.fill();
-        }
+            this.calcInputs = function(outIndex) {
+                for (var i = 0; i < this.numPixels; i++) {
+                    this.inputs[i] = this.calcInfluence(i, outIndex);
+                }
+            };
 
-        function getInfluence(inputIndex, outIndex) {
-            var sum = 0;
-            for (var i=0; i<w12.length; i++) {
-                sum += w12[i][inputIndex]*w23[outIndex][i];
-            }
-            return sum;
-        }
+            this.calcInfluence = function(inputIndex, outIndex) {
+                var sum = 0;
+                for (var i=0; i<w12.length; i++) {
+                    sum += w12[i][inputIndex]*w23[outIndex][i];
+                }
+                return sum;
+            };
+
+            this.draw = function() {
+                var max = Math.max(...this.inputs);
+                var min = Math.min(...this.inputs);
+
+                for (var i = 0; i < this.numPixels; i++) {
+                    this.drawPixel(i, (this.inputs[i] - min) / (max - min));
+                }
+            };
+
+            this.drawPixel = function (index, value) {
+                var color = Math.floor(255*(1-value));
+                var y = this.scale * (index % this.resolution);
+                var x = this.scale * Math.floor(index / this.resolution);
+
+                var c=document.getElementById(this.canvas);
+                var ctx=c.getContext("2d");
+
+                ctx.beginPath();
+                ctx.fillStyle = "rgb(" + color +"," + color + "," + color + ")";
+                ctx.lineWidth="1";
+                ctx.rect(x, y, this.scale, this.scale);
+                ctx.fill();
+            };
+        };
     </script>
 </head>
 
@@ -52,6 +73,8 @@
     </div>
     <div class="main">
         <h1>Knowledge extract from FFNN trained on MNIST</h1>
+        <p>Below images are generated "on the fly" by reverse analysis of pre-trained feed forward neural network used in handwritten digits recognition</p>
+        <p>Approach description and sources <a href="https://github.com/cleardatalabs/knowledge-extract-ffnn-mnist/">on GitHub</a></p>
         <table>
             <tr>
                 <td>0</td>
@@ -104,21 +127,11 @@
     </div>
 <script>
     (function() {
-
-        for (j=0; j<10; j++) { // digits, from 0 till 9
-            var influences = Array();
-            for (var i = 0; i < numPixels; i++) {
-                influences[i] = getInfluence(i, j);
-            }
-
-            var max = Math.max(...influences);
-            var min = Math.min(...influences);
-
-            for (var i = 0; i < numPixels; i++) {
-                draw(j, i, (influences[i] - min) / (max - min));
-            }
+        for (var i=0; i<10; i++) { // digits, from 0 till 9
+            var model = new Model('canvas' + i);
+            model.calcInputs(i);
+            model.draw();
         }
-
     })();
 </script>
 </body>
