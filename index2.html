@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Knowledge extract from FFNN trained on MNIST - part 2</title>
+    <style>
+        body, * {
+            font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+            background-color: white;
+        }
+
+        canvas {
+            border: 1px solid black;
+        }
+
+        table {
+            font-size: 124px;
+            border: none;
+            text-align: center;
+        }
+
+        table td {
+            width: 280px;
+            height: 280px;
+        }
+
+        a {
+            text-decoration: none;
+            font-weight: bold;
+            color: #777
+        }
+
+        a:hover {
+            text-decoration: underline
+        }
+
+        input, button, select {
+            margin: 5px;
+        }
+
+        .logo {
+            background: url("logo.png") no-repeat left;
+            margin-left: 20px;
+            padding-left: 60px
+        }
+
+        .header {
+            font-size: 48px;
+            border-bottom: 1px solid black
+        }
+
+        .main {
+            margin: 10px auto;
+            width: 480px
+        }
+
+        .main, .footer {
+            text-align: center
+        }
+
+        .main p {
+            text-align: justify
+        }
+
+        .footer {
+            height: 30px;
+            border-top: 1px solid black;
+            padding-top: 5px
+        }
+    </style>
+    <script src="./net.js"></script>
+    <script>
+
+        function Model(canvas, character) {
+            this.canvas = canvas;
+            this.character = character;
+            this.isRunning = false;
+
+            this.scale = 10;
+            this.resolution = 28;
+            this.numPixels = this.resolution * this.resolution;
+
+            this.inputs = [];
+
+            this.initInputs = function () {
+
+                for (var i = 0; i < this.numPixels; i++) {
+                    this.inputs[i] = -1;
+                    if (Math.random() < 0.1) {
+                        this.inputs[i] += 0.2 * Math.random();
+                    }
+                }
+
+            };
+
+            this.inputsChanged = function () {
+                var changedInputs = this.inputs.slice();
+                var idx = Math.floor(this.numPixels * Math.random());
+                changedInputs[idx] += 0.2 * Math.random() - 0.1;
+
+                if (changedInputs[idx] < -1)
+                    changedInputs[idx] = -1;
+                if (changedInputs[idx] > 1)
+                    changedInputs[idx] = 1;
+
+                return changedInputs;
+            };
+
+            this.calcErr = function (inputs, out) {
+                var err = 1 - nn(inputs, w12, bias2, w23, bias3)[out];
+                var div = 0;
+
+                if (document.getElementById('regularize').checked) {
+
+                    for (var i = 1; i < this.resolution - 1; i++) {
+                        for (var j = 1; j < this.resolution - 1; j++) {
+                            var avgVal = (
+                                0.7 * inputs[this.resolution * (i - 1) + (j - 1)] +
+                                inputs[this.resolution * (i - 1) + (j)] +
+                                0.7 * inputs[this.resolution * (i - 1) + (j + 1)] +
+                                0.7 * inputs[this.resolution * (i + 1) + (j - 1)] +
+                                inputs[this.resolution * (i + 1) + (j)] +
+                                0.7 * inputs[this.resolution * (i + 1) + (j + 1)] +
+                                inputs[this.resolution * (i) + (j - 1)] +
+                                inputs[this.resolution * (i) + (j + 1)]
+                            ) / 6.8;
+
+                            div += (avgVal - inputs[this.resolution * (i) + j]) * (avgVal - inputs[this.resolution * (i) + j]);
+                        }
+                    }
+                }
+                // console.log(err + ' === ' + 0.00001 * div);
+
+                return err + 0.00001 * div;
+            };
+
+
+            this.run = function () {
+                if (!this.isRunning) {
+                    return;
+                }
+
+
+                var out = document.getElementById(this.character).value;
+                var bestErr = this.calcErr(this.inputs, out);
+
+                for (var i = 0; i < 100; i++) {
+                    var newInputs = this.inputsChanged();
+                    var newErr = this.calcErr(newInputs, out);
+
+                    console.log(bestErr + ' ' + newErr);
+
+                    if (newErr < bestErr) {
+                        bestErr = newErr;
+                        this.inputs = newInputs;
+                    }
+                }
+
+                this.draw();
+
+                var self = this;
+                setTimeout(
+                    function () {
+                        self.run()
+                    }, 0);
+            };
+
+
+            this.draw = function () {
+                var max = 1;
+                var min = -1;
+
+                for (var i = 0; i < this.numPixels; i++) {
+                    this.drawPixel(i, (this.inputs[i] - min) / (max - min));
+                }
+            };
+
+            this.drawPixel = function (index, value) {
+                var color = Math.floor(255 * (1 - value));
+                var y = this.scale * (index % this.resolution);
+                var x = this.scale * Math.floor(index / this.resolution);
+
+                var c = document.getElementById(this.canvas);
+                var ctx = c.getContext("2d");
+
+                ctx.beginPath();
+                ctx.fillStyle = "rgb(" + color + "," + color + "," + color + ")";
+                ctx.lineWidth = "1";
+                ctx.rect(x, y, this.scale, this.scale);
+                ctx.fill();
+            };
+        };
+    </script>
+</head>
+
+<body>
+<div class="header">
+    <a class="logo" href="http://cleardatalabs.com">ClearDataLabs</a>
+</div>
+<div class="main">
+    <h1>Knowledge extract from FFNN trained on MNIST - part 2</h1>
+    <p>Image getting iteratively adapted to the pre-trained NN model</p>
+    <p>Approach description and sources <a href="https://github.com/cleardatalabs/knowledge-extract-ffnn-mnist/">on
+        GitHub</a></p>
+
+    <label>Reconstructed digit<select id="digit">
+        <option>0</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+    </select></label>
+    <br/>
+    <label>Force Smoothness
+        <input type="checkbox" id="regularize"/>
+    </label>
+    <br/>
+    <button id="run">Run</button>
+    <button id="reset">Reset</button>
+    <br/>
+    <canvas id="canvas" width="280px" height="280px"></canvas>
+</div>
+<div class="footer">
+    created by <a href="http://cleardatalabs.com">ClearDataLabs</a> in 2018
+    based on <a href="http://myselph.de/neuralNet.html">myselph.de neuralNet</a>
+    distributed under <a href="https://choosealicense.com/licenses/mit/">MIT</a>
+    hosted on <a href="https://github.com/cleardatalabs/knowledge-extract-ffnn-mnist">GitHub</a>
+</div>
+<script>
+    (function () {
+
+        var model = new Model('canvas', 'digit');
+        model.initInputs();
+
+        document.getElementById('run').onclick = function () {
+            model.isRunning = !model.isRunning;
+            model.run();
+            this.innerHTML = model.isRunning ? 'Stop' : 'Run';
+        };
+
+        document.getElementById('reset').onclick = function () {
+            model.initInputs();
+            model.draw();
+        }
+
+    })();
+</script>
+</body>
+</html>
