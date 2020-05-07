@@ -74,4 +74,4 @@ If you found it interesting kindly let us know by:
 - giving project a star on GitHub
 - following us on [Twitter](https://twitter.com/ClearDataLabs)
 
-To be continued...
+To be continued http://cleardatalabs.com/knowledge-extract-ffnn-mnist/index2.html
